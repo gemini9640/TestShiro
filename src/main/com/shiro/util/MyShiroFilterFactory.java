@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 public class MyShiroFilterFactory extends ShiroFilterFactoryBean{
-    
+
     @Autowired
     private Dao dao;
     @Override
