@@ -16,7 +16,7 @@ public class MyShiroFilterFactory extends ShiroFilterFactoryBean{
     private Dao dao;
     @Override
     public void setFilterChainDefinitions(String definitions) {
-        System.out.println("test");
+        
         List<RolesPermissions> list = dao.queryAllRolePermissions();
         StringBuilder sb = new StringBuilder();
         for(RolesPermissions rp : list)

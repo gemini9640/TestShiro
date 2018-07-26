@@ -46,8 +46,8 @@
       <file leaf-file-name="MyShiroFilterFactory.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/com/shiro/util/MyShiroFilterFactory.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="14" column="14" lean-forward="true" selection-start-line="14" selection-start-column="14" selection-end-line="14" selection-end-column="14" />
+            <state relative-caret-position="180">
+              <caret line="18" column="8" lean-forward="false" selection-start-line="18" selection-start-column="8" selection-end-line="18" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -349,7 +349,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
-    <property name="settings.editor.selected.configurable" value="preferences.sourceCode" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -797,7 +797,7 @@
       <workItem from="1532064838312" duration="5172000" />
       <workItem from="1532311838415" duration="594000" />
       <workItem from="1532395045187" duration="183000" />
-      <workItem from="1532593840080" duration="1545000" />
+      <workItem from="1532593840080" duration="1631000" />
     </task>
     <task id="LOCAL-00001" summary="shiro">
       <created>1531791581091</created>
@@ -919,7 +919,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="91515000" />
+    <option name="totallyTimeSpent" value="91601000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="41" y="23" width="1399" height="877" extended-state="0" />
@@ -1372,8 +1372,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/com/shiro/util/MyShiroFilterFactory.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="14" column="14" lean-forward="true" selection-start-line="14" selection-start-column="14" selection-end-line="14" selection-end-column="14" />
+        <state relative-caret-position="180">
+          <caret line="18" column="8" lean-forward="false" selection-start-line="18" selection-start-column="8" selection-end-line="18" selection-end-column="8" />
           <folding />
         </state>
       </provider>
