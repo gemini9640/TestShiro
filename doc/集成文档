@@ -1,0 +1,116 @@
+springmvc+spring+shiro
+*重点解释集成shiro
+
+导入各种jar包，参考pom.xml
+
+web.xml
+
+1.配置spring
+<listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+</listener>
+<context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+        classpath:conf/spring/spring.xml
+    </param-value>
+</context-param>
+
+2.配置shiro核心过滤器核心
+<filter>
+    <filter-name>shiroFilter</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    //参考targetFilterLifecycle.txt
+    <init-param>
+        <param-name>targetFilterLifecycle</param-name>
+        <param-value>true</param-value>
+    </init-param>
+</filter>
+<filter-mapping>
+    <filter-name>shiroFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+3.配置springmvc核心控制器
+<servlet>
+    <servlet-name>springMvc</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:conf/spring/springmvc.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+</servlet>
+<servlet-mapping>
+    <servlet-name>springMvc</servlet-name>
+    <url-pattern>/</url-pattern>
+</servlet-mapping>
+
+4.springmvc.xml
+如果需要使用shiro注解来认证需要在springmvc.xml中添加以下配置
+<!--开启注解式控制权限-->
+<!--<import resource="shiroAnnotation.xml"/>-->
+
+5.shiro.xml
+//默认shrio提供的filter factory
+<!--<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">-->
+
+//自定义shiro filter factory
+//为了可以重写加载权限配置方法，从数据库中读取权限配置
+<bean id="shiroFilter" class="com.shiro.util.MyShiroFilterFactory">
+    <property name="securityManager" ref="securityManager"></property>
+    //没有登录访问页面会跳转到loginUrl
+    <property name="loginUrl" value="/login.jsp" />
+    //没有权限访问页面会跳转到unauthorizedUrl
+    <property name="unauthorizedUrl" value="/403.html" />
+    //写死一些不常修改的权限配置, 一下为例，anon无需认证，authc需要认证
+    <property name="filterChainDefinitions">
+        <value>
+            /index.jsp = anon
+            /login.jsp = anon
+            /login.do = anon
+            /logout.do = logout
+            /loginsuccess.jsp = authc
+        </value>
+    </property>
+    //自定义权限filter，这里为了可以匹配"or"权限
+    <property name="filters">
+        <util:map>
+            <entry key="myAuthrFilter" value-ref="myAuthrFilter"/>
+        </util:map>
+    </property>
+</bean>
+
+6.MyShiroFilterFactory.java
+结合（5）实现自定义shiro filter factory加载数据库中的权限配置，会追加在 <property name="filterChainDefinitions">所配置的内容之后
+这里需要注意 /authr/* = authc 需要放在权限配置的最后，否者认证信息通过后将不会往后匹配
+
+举例：
+（错误）
+/authr/* = authc
+/authr/addPermission = perms["user:add"]
+
+在这个配置里，用户登录成功后访问/authr/addPermission这个URL会被匹配得到放行
+但是实际上我们期望的是 /authr/addPermission = perms["user:add"]
+用户本身并没有权限"user:add"，既不可访问/authr/addPermission
+因此权限配置用户认证 /authr/* = authc 需要放到最后
+
+（正确）
+/authr/addPermission = perms["user:add"]
+/authr/* = authc
+
+
+7.MyRealm.java
+自定义realm可以自定义认证授权信息来源，既可以选择从数据库中加载认证授权信息
+shrio的主体subject会通过MyRealm.java验证用户和权限信息
+
+8.UserController.java
+页面提交用户登录信息的时候通过以下代码注册用户信息到shiro主体，从而有主体subject来验证用户和权限信息
+Subject subject = SecurityUtils.getSubject();
+UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+try {
+    subject.login(token);
+} catch (AuthenticationException e) {
+    System.out.println(e.getMessage());
+    return "loginfail";
+}

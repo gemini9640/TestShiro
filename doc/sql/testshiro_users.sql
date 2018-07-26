@@ -1,0 +1,2 @@
+INSERT INTO testshiro.users (username, password, password_salt) VALUES ('zhang', 'e99a18c428cb38d5f260853678922e03', 'abc');
+INSERT INTO testshiro.users (username, password, password_salt) VALUES ('wang', 'f5ca2d0fea818f7c46b004aa04214791', 'abc');

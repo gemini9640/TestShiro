@@ -1,0 +1,45 @@
+在web.xml中进行配置，对所有的URL请求进行过滤，就像"击鼓传花"一样，链式处理。
+
+配置分为两种A和B。
+
+A:普通配置
+
+在web.xml中增加如下内容：
+<filter>
+    <filter-name>permissionFilter</filter-name>
+    <filter-class>com.filter.PermissionFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>permissionFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+由filter和filter-mapping构成。filter指定过滤器处理类(实现了Filter接口)，filter-mapping指定过滤的规则。
+B:高级配置(允许代理注入Spring bean)
+
+在web.xml中增加如下内容：
+<filter>
+    <filter-name>permission</filter-name>
+    <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    <init-param>
+        <param-name>targetFilterLifecycle</param-name>
+        <param-value>true</param-value>
+    </init-param>
+</filter>
+ <filter-mapping>
+    <filter-name>permission</filter-name>
+    <url-pattern>*.htm</url-pattern>
+</filter-mapping>
+
+在spring bean配置中加入：
+ <bean id="permission" class="com.taobao.kfc.kwb.web.permission.PermissionHttpServlet"></bean>
+因为filter比bean先加载，也就是spring会先加载filter指定的类到container中，这样filter中注入的spring bean就为null了。
+
+解决办法：
+先filter中加入DelegatingFilterProxy类，"targetFilterLifecycle"指明作用于filter的所有生命周期。
+原理是，DelegatingFilterProxy类是一个代理类，所有的请求都会首先发到这个filter代理，然后再按照"filter-name"委派到spring中的这个bean。
+
+在Spring中配置的bean的name要和web.xml中的<filter-name>一样.
+
+此外，spring bean实现了Filter接口，但默认情况下，是由spring容器来管理其生命周期的(不是由tomcat这种服务器容器来管理)。如果设置"targetFilterLifecycle"为True，则spring来管理Filter.init()和Filter.destroy()；若为false，则这两个方法失效！！
+
+B和A最大的不同是，A是一个filter，优先被加载到container中，无法调用spring中后续的bean；而B是一个spring bean，可以引用其他的bean，而请求都通过DelegatingFilterProxy类委派给B！

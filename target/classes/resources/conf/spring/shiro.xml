@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager"/>
+	</bean>
+
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="myRealm"></property>
+	</bean>
+
+	<bean id="myRealm" class="com.shiro.realm.MyRealm">
+		<property name="credentialsMatcher" ref="credentialsMatcher"/>
+	</bean>
+
+	<bean id="credentialsMatcher" class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+		<property name="hashAlgorithmName" value="md5"/>
+		<property name="hashIterations" value="1" />
+	</bean>
+
+	<bean id="myAuthrFilter" class="com.shiro.filter.MyAuthrFilter"/>
+
+	<!--<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">-->
+	<!--自定义shiro filter factory-->
+	<bean id="shiroFilter" class="com.shiro.util.MyShiroFilterFactory">
+		<property name="securityManager" ref="securityManager"></property>
+		<property name="loginUrl" value="/login.jsp" />
+		<property name="unauthorizedUrl" value="/403.html" />
+		<property name="filterChainDefinitions">
+			<value>
+				/index.jsp = anon
+				/login.jsp = anon
+				/login.do = anon
+				/logout.do = logout
+				/loginsuccess.jsp = authc
+			</value>
+		</property>
+		<property name="filters">
+			<util:map>
+				<entry key="myAuthrFilter" value-ref="myAuthrFilter"/>
+			</util:map>
+		</property>
+	</bean>
+
+</beans>
